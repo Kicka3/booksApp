@@ -44,7 +44,7 @@ export const ItemInfo: React.FC = () => {
         setEditMode(true);
     }
     const saveCardHandler = () => {
-        if (titleState === '' || authorState === '' || descriptionState === '' || image === '') {
+        if (titleState === '' || authorState === '' || descriptionState === '' || image === undefined) {
             error('Все поля должны быть заполнены!');
         } else {
             setEditMode(false);
