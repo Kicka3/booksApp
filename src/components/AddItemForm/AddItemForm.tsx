@@ -15,7 +15,6 @@ const AddItemForm: React.FC = () => {
     const [image, setImage] = useState<string>('');
 
     const [messageApi, contextHolder] = message.useMessage();
-    const [errorMessage, setErrorMessage] = useState(false);
 
 
     const uploadHandler = (filesData: any) => {
@@ -34,7 +33,6 @@ const AddItemForm: React.FC = () => {
 
                     if (width > 145 || height > 205) {
                         warning('Картинка должна быть не более 145x205 пикселей')
-                        setErrorMessage(true);
                         return;
                     } else {
                         setImage(reader.result as string);
@@ -71,11 +69,9 @@ const AddItemForm: React.FC = () => {
         const values: ItemType = form.getFieldsValue();
 
         if (values.title === undefined || values.author === undefined || values.desc === undefined || image === undefined) {
-            setErrorMessage(true);
             error('Все поля должны быть заполнены!');
         } else {
             success('Карточка добавлена!');
-            setErrorMessage(false);
             dispatch(createBookAC(values.title, values.author, values.desc, image));
             form.resetFields();
         }

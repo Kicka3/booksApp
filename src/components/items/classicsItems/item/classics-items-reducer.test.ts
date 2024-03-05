@@ -1,8 +1,9 @@
 import {
     classicsItemsReducer,
-    createBookAC, CreateBookACType,
+    createBookAC,
     deleteBookAC,
-    InitialStateType, updateTitleBookAC
+    InitialStateType,
+    updateTitleBookAC
 } from "../../classicsItems/classics-items-reducer";
 
 
