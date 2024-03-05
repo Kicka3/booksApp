@@ -1,34 +1,53 @@
-import React from 'react';
-import {Button, Card} from 'antd';
-import Meta from "antd/es/card/Meta";
+import React, {useState} from 'react';
+import {Item} from "../../items/classicsItems/item/Item";
 
-const cardStyle: React.CSSProperties = {
-    width: 620,
-};
-
-const imgStyle: React.CSSProperties = {
-    display: 'block',
-    width: 273,
-};
 
 export const TechItems: React.FC = () => {
-    const onClickhandler = () => {
 
+    //Fake data for example
+    const [techsState, setTechsState] = useState([
+        {
+            id: crypto.randomUUID(),
+            title: 'Some book 1',
+            author: 'Will Smith',
+            desc: 'test desc',
+            src: 'https://e7.pngegg.com/pngimages/260/424/png-clipart-gear-icon-gears-file-transport-transportation-thumbnail.png'
+        },
+        {
+            id: crypto.randomUUID(),
+            title: 'Some book 2',
+            author: 'Andruxa Kozlov',
+            desc: 'test desc',
+            src: 'https://e7.pngegg.com/pngimages/260/424/png-clipart-gear-icon-gears-file-transport-transportation-thumbnail.png'
+        },
+        {
+            id: crypto.randomUUID(),
+            title: 'Some book 3',
+            author: 'Ann Topolsky',
+            desc: 'test desc',
+            src: 'https://e7.pngegg.com/pngimages/260/424/png-clipart-gear-icon-gears-file-transport-transportation-thumbnail.png'
+        },
+    ]);
+
+    const deleteBookHandler = (cardId: string) => {
+        setTechsState(techsState.filter(el => el.id !== cardId));
     }
 
+
     return (
-        <Card
-            hoverable
-            style={{width: 240, height: 600, overflow: 'hidden'}}
-            cover={<img alt="example" src="https://c0.klipartz.com/pngpicture/528/630/gratis-png-logo-de-engranajes-icono-de-engranajes-thumbnail.png"/>}
-        >
-            <Meta title={'Техническая книга'}
-                  description={'бла бла бла 2'}
-            />
-            <Button type="primary" href="#" onClick={onClickhandler}
-                    style={{marginTop: '12px', display: 'flex', alignItems: 'center', width: '90px'}}>
-                Get Book
-            </Button>
-        </Card>
-    )
+        <>
+            {techsState.map(el => (
+                <div key={el.id}>
+                    <Item deleteBookHandler={deleteBookHandler}
+                          itemId={el.id}
+                          img={el.src}
+                          author={el.author}
+                          desc={el.desc}
+                          title={el.title}
+                        // editModeForTitle={}
+                    />
+                </div>
+            ))}
+        </>
+    );
 };

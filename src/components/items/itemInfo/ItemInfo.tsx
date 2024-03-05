@@ -1,88 +1,177 @@
-import {Card, Image, Input} from 'antd';
-import {useDispatch} from "react-redux";
-import React, {useState} from 'react';
+import {Button, Card, Image, Input, message, Upload} from 'antd';
+import React, {ChangeEvent, useState} from 'react';
 import './item.css'
-import {EditableSpan} from "../../EditableSpan/EditableSpan";
-import {updateTitleBookAC} from "../classicsItems/classics-items-reducer";
+import {useParams} from "react-router-dom";
 import {useAppSelector} from "../../../app/store";
+import {InitialStateType, updateTitleBookAC} from "../../items/classicsItems/classics-items-reducer";
+import {DownloadOutlined} from '@ant-design/icons';
+import {useDispatch} from "react-redux";
 
 
 export const ItemInfo: React.FC = () => {
+
+    const items: InitialStateType = useAppSelector(state => state.classic);
+    const {id} = useParams();
+    const item = items.find(el => el.id === id);
+    const {TextArea} = Input;
     const dispatch = useDispatch();
-    const stateLoc = useAppSelector(state => state.classic)
+    const [messageApi, contextHolder] = message.useMessage();
 
-    const [editModeForTitle, setEditModeForTitle] = useState(false);
-    const [title, setTitle] = useState('')
+    const [editMode, setEditMode] = useState<boolean>(false);
+    const [titleState, setTitleState] = useState<string>('');
+    const [authorState, setAuthorState] = useState<string>('');
+    const [descriptionState, setDescriptionState] = useState<string>('');
+    const [image, setImage] = useState<string>('');
 
-    // const localState = {
-    //     id: crypto.randomUUID(),
-    //     title: 'Some book 1',
-    //     author: 'Will Smith',
-    //     desc: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam dicta, dolorum necessitatibus nemo nulla quia sunt voluptas voluptatem? Aliquid blanditiis consequatur cupiditate eveniet illum iusto maiores nemo optio quas ullam.',
-    //     src: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'
-    // }
 
-    const activateEditMode = () => {
-        setEditModeForTitle(true);
+    //Changes fn
+    const changeAuthorHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        const author = e.currentTarget.value;
+        setAuthorState(author);
     }
-    const disableEditMode = () => {
-        setEditModeForTitle(false);
-        // dispatch(updateTitleBookAC())
+    const changeTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        const title = e.currentTarget.value;
+        setTitleState(title);
+    }
+    const changeDescHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const desc = e.currentTarget.value;
+        setDescriptionState(desc);
     }
 
-    const changeInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.currentTarget.value)
-        setTitle(e.currentTarget.value)
+
+    //Actions
+    const changeCardHandler = () => {
+        setEditMode(true);
     }
+    const saveCardHandler = () => {
+        if (titleState === '' || authorState === '' || descriptionState === '' || image === '') {
+            error('Все поля должны быть заполнены!');
+        } else {
+            setEditMode(false);
+            success('Карточка обновлена');
+            dispatch(updateTitleBookAC(id, authorState, titleState, descriptionState, image));
+        }
+    }
+
+
+    const uploadHandler = (filesData: any) => {
+        const currentFile = filesData.file.originFileObj
+        if (currentFile) {
+            const reader = new FileReader();
+
+            //Async операция
+            reader.readAsDataURL(currentFile)
+
+            reader.onloadend = () => {
+                const file64 = reader.result as string
+                setImage(file64)
+            }
+        }
+    }
+
+
+    const success = (message: string) => {
+        messageApi.open({
+            type: 'success',
+            content: message,
+        });
+    };
+    const error = (message: string) => {
+        messageApi.open({
+            type: 'error',
+            content: message,
+        });
+    };
 
     return (
         <>
-            <Card title={localState.author}>
-                Book:
-                <Card
-                    style={{
-                        width: 900,
-                        display: 'flex',
-                        alignItems: 'center',
-                        alignContent: 'center',
-                        justifyContent: 'center',
-                        justifyItems: 'center'
-                    }}
-                >
+            {contextHolder}
+            <Card title={item?.author} style={{minHeight: 600}}>
+                {
+                    editMode && <Input placeholder="Введите автора.."
+                                       style={{maxWidth: '100%', marginBottom: 20}}
+                                       onChange={changeAuthorHandler}
+                                       value={authorState}
+                   />
+                }
+
+                <Card style={{
+                    maxWidth: 500,
+                    minHeight: 500
+                }}>
                     <Image
                         style={{borderRadius: 6}}
                         width={400}
-                        src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+                        src={item?.src}
                     />
 
-                    {editModeForTitle
-
-                        ? <Input placeholder="Basic usage"
-                                 onBlur={disableEditMode}
-                                 style={{maxWidth: 400, marginTop: 10}}
-                                 onChange={changeInputHandler}
+                    {editMode
+                        ? <Input placeholder="Введите название..."
+                                 style={{
+                                     maxWidth: 400, marginTop: 10, display: 'flex',
+                                     alignItems: 'center',
+                                     alignContent: 'center',
+                                     justifyContent: 'center',
+                                     justifyItems: 'center',
+                                 }}
+                                 onChange={changeTitleHandler}
+                                 value={titleState}
                         />
-
-
                         : <div>
-
                             <Card type="inner"
-                                  title={localState.title}
+                                  title={item?.title}
                                   extra=''
                                   style={{maxWidth: 400, overflow: 'hidden'}}
-                                  onDoubleClick={activateEditMode}
-
                             >
-                                {localState.desc}
                             </Card>
                         </div>
                     }
 
+                    {editMode
+                        ? <TextArea rows={4}
+                                    placeholder="Введите описание..."
+                                    maxLength={300}
+                                    style={{maxWidth: 400, marginTop: 10, resize: 'none'}}
+                                    value={descriptionState}
+                                    onChange={changeDescHandler}
+                        />
+                        : <div style={{
+                            border: '1px solid rgb(240, 240, 240)',
+                            borderRadius: '8px',
+                            padding: 10,
+                            maxWidth: 400
+                        }}>{item?.desc}</div>
+                    }
+
+                    <div>
+                        {!editMode
+                            ? <Button type="primary" style={{marginTop: 20,}} onClick={changeCardHandler}>
+                                Изменить карточку
+                            </Button>
+                            : <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                flexDirection: 'row',
+                                marginTop: 20
+                            }}>
+                                <div>
+                                    <Upload action="/upload.do" onChange={uploadHandler}>
+                                        <Button type="primary" icon={<DownloadOutlined/>}>
+                                            Загрузить обложку
+                                        </Button>
+                                    </Upload>
+                                </div>
+                                <div>
+                                    <Button type="primary" onClick={saveCardHandler}>
+                                        Сохранить изменения
+                                    </Button>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </Card>
 
             </Card>
-
-
         </>
     );
 };

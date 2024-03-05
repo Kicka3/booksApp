@@ -1,57 +1,65 @@
 import {Link} from 'react-router-dom';
 import {Card, Typography} from 'antd';
-import {useAppSelector} from "../../../app/store";
-import {deleteBookAC} from "../../items/classicsItems/classics-items-reducer";
-import {useDispatch} from "react-redux";
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
-import React, {useState} from 'react';
+import React from 'react';
 
+type ItemPropsType = {
+    deleteBookHandler: (cardId: string) => void
+    itemId: string
+    img: string
+    author: string
+    desc: string
+    title: string
+}
 
-export const ClassicsItems: React.FC = () => {
-    const dispatch = useDispatch();
+export const Item: React.FC<ItemPropsType> = (props) => {
     const {Meta} = Card;
-    const {Paragraph, Text} = Typography;
-    const classicsState = useAppSelector(state => state.classic);
+    const {Paragraph} = Typography;
 
 
-    const deleteBookHandler = (cardId: string) => {
-        dispatch(deleteBookAC(cardId))
-    }
-    const editModeHandler = (cardId: string) => {
-        console.log('edite mod')
-    }
+    const {
+        deleteBookHandler,
+        itemId,
+        img,
+        author,
+        desc,
+        title,
+    } = props;
 
 
     return (
         <>
-            {classicsState.map(el => (
-                <div key={el.id}>
-                    <Link to={`/card/${el.id}`}>
-
-                        <Card
-                            hoverable
-                            style={{maxWidth: 300, minHeight: 500}}
-                            cover={
-                                <img
-                                    alt="example"
-                                    src={el.src}
-                                />
-                            }
-                            actions={[
-                                <DeleteOutlined key="setting" onClick={() => deleteBookHandler(el.id)}/>,
-                                <EditOutlined key="edit" onClick={() => editModeHandler(el.id)}/>
-                            ]}>
-                            <Paragraph>{el.author}</Paragraph>
-                            <Meta
-                                title={el.title}
-                                description={el.desc}
+            <div>
+                <Link to={`item/${itemId}`}>
+                    <Card
+                        hoverable
+                        style={{maxWidth: 300, maxHeight: 700, overflow: 'hidden', borderRadius: '6px 6px 0 0'}}
+                        cover={
+                            <img
+                                alt="example"
+                                src={img}
                             />
+                        }
 
-                        </Card>
-                    </Link>
-                </div>
-
-            ))}
+                    >
+                        <Paragraph>{author}</Paragraph>
+                        <Meta
+                            style={{maxHeight: 150}}
+                            title={title}
+                            description={desc}
+                        />
+                    </Card>
+                </Link>
+                <Card
+                    style={{maxWidth: 300, borderRadius: '0 0 6px 6px'}}
+                    actions={[
+                        <DeleteOutlined key="setting"
+                                        onClick={() => deleteBookHandler(itemId)}
+                        />,
+                        <Link to={`item/${itemId}`}> <EditOutlined key="edit"/> </Link>
+                    ]}
+                />
+            </div>
         </>
     );
 };

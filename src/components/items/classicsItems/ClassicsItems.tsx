@@ -1,34 +1,31 @@
+import {useAppSelector} from "../../../app/store";
+import {deleteBookAC} from "../../items/classicsItems/classics-items-reducer";
+import {useDispatch} from "react-redux";
 import React from 'react';
-import {Button, Card} from 'antd';
+import {Item} from "./item/Item";
 
-const {Meta} = Card;
 
 export const ClassicsItems: React.FC = () => {
-    const title = 'Some title'
-    const description = `Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
-    Accusamus aperiam consectetur doloribus ea eveniet, ipsa iure labore maxime molestiae, non repellat sunt suscipit unde.
-        Ab deleniti exercitationem illo quae reiciendis.`
+    const dispatch = useDispatch();
+    const classicsState = useAppSelector(state => state.classic);
 
-
-    const onClickhandler = () => {
-
+    const deleteBookHandler = (cardId: string) => {
+        dispatch(deleteBookAC(cardId));
     }
 
     return (
         <>
-            <Card
-                hoverable
-                style={{width: 240, height: 600, overflow: 'hidden'}}
-                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"/>}
-            >
-                <Meta title={title}
-                      description={description}
-                />
-                <Button type="primary" href="#" onClick={onClickhandler}
-                        style={{marginTop: '12px', display: 'flex', alignItems: 'center', width: '90px'}}>
-                    Get Book
-                </Button>
-            </Card>
+            {classicsState.map(el => (
+                <div key={el.id}>
+                    <Item deleteBookHandler={deleteBookHandler}
+                          itemId={el.id}
+                          img={el.src}
+                          author={el.author}
+                          desc={el.desc}
+                          title={el.title}
+                    />
+                </div>
+            ))}
         </>
-    )
+    );
 };
