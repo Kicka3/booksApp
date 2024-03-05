@@ -11,6 +11,7 @@ import {AppRootStateType, useAppSelector} from "../app/store";
 
 
 const App: React.FC = () => {
+
     const classicItems = useAppSelector((state: AppRootStateType) => state.classic);
 
     useEffect(() => {
