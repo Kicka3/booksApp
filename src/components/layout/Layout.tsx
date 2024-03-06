@@ -6,7 +6,7 @@ import {Link, Outlet} from "react-router-dom";
 const {Header, Sider, Content} = Layout;
 
 const AppLayout: React.FC = () => {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
     const {
         token: {colorBgContainer, borderRadiusLG},
     } = theme.useToken();
@@ -57,7 +57,7 @@ const AppLayout: React.FC = () => {
                         style={{
                             fontSize: '16px',
                             width: 54,
-                            height: 24,
+                            height: 34,
                         }}
                     />
                 </Header>

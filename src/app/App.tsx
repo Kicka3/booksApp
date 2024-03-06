@@ -26,7 +26,7 @@ const App: React.FC = () => {
     return (
         <div className="App">
             <Routes>
-                <Route path={'/'} element={<AppLayout/>}>
+                <Route element={<AppLayout/>}>
                     <Route path={'classic'} element={<ClassicsItems/>}/>
                     <Route path={'classic/item/:id'} element={<ItemInfo />}/>
                     <Route path={'technical'} element={<TechItems/>}/>
